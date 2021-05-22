@@ -17,7 +17,6 @@ def home(request):
 def createAPI(request):
     if request.method == 'POST':
         data = JSONParser().parse(request)
-        print(data)
         if data['type'] == "Song":
             serialized_data = serializers.Song_Serializer(data=data)
             if serialized_data.is_valid():
@@ -89,15 +88,12 @@ def updateAPI(request, type, id):
     if type == "Song":
         try:
             song = Song.objects.get(songId=id)
-            print(song)
         except:
             return HttpResponse("Invalid request", status=400)
         
         if request.method == "PUT":
             song_data = JSONParser().parse(request)
-            print(song_data)
             serialized_song_data = serializers.Song_Serializer(song, song_data, partial=True)
-            print(serialized_song_data)
             if serialized_song_data.is_valid():
                 serialized_song_data.save()
                 return HttpResponse("Action is successful", status=200)
@@ -114,7 +110,6 @@ def updateAPI(request, type, id):
         field_name = 'participants'
         field_object = Podcast._meta.get_field(field_name)
         field_value = field_object.value_from_object(pod)
-        print(len(field_value))
         if request.method == "PUT":
             pod_data = JSONParser().parse(request)
             if 'participants' in pod_data:
@@ -175,13 +170,11 @@ def getAPI(request, type, id):
     elif type == "Podcast":
         try:
             pod = Podcast.objects.get(podId=id)
-            print(pod)
         except:
             return HttpResponse("Invalid Request", status=400)
 
         if request.method == 'GET':
             serialized_pod = serializers.Podcast_Serializer(pod)
-            print(serialized_pod.data)
             return JsonResponse(serialized_pod.data, safe=False, status=200)
         else:
             return HttpResponse("Internal server error", status=500)
